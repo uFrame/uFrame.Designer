@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,23 +19,33 @@ namespace uFrame.Editor.Core
             set { _logger = value; }
         }
 
+        public static IEnumerable<Assembly> TypeAssemblies {
+            get {
+                return _typeAssemblies.GetAssemblies();
+            }
+        }
+        
+        public static IEnumerable<Assembly> CachedAssemblies {
+            get {
+                return _cachedAssemblies.GetAssemblies();
+            }
+        }
+
         private static UFrameContainer _container;
         private static ICorePlugin[] _plugins;
         private static IDebugLogger _logger;
         private static Dictionary<Type, IEventManager> _eventManagers;
-        private static List<Assembly> _typeAssemblies;
 
-        private static AssembliesTypesCache CachedAssemblies { get; set; }
-
-        private static AssembliesTypesCache TypeAssemblies { get; set; }
+        private static AssembliesTypesCache _cachedAssemblies;
+        private static AssembliesTypesCache _typeAssemblies;
 
         static InvertApplication()
         {
-            TypeAssemblies = new AssembliesTypesCache();
+            _typeAssemblies = new AssembliesTypesCache();
 
-            CachedAssemblies = new AssembliesTypesCache();
-            CachedAssemblies.AddAssembly(typeof(int).Assembly);
-            CachedAssemblies.AddAssembly(typeof(List<>).Assembly);
+            _cachedAssemblies = new AssembliesTypesCache();
+            _cachedAssemblies.AddAssembly(typeof(int).Assembly);
+            _cachedAssemblies.AddAssembly(typeof(List<>).Assembly);
 
             foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -92,7 +103,7 @@ namespace uFrame.Editor.Core
                 yield return type;
             if (includeAbstract)
             {
-                foreach (var assembly in CachedAssemblies.AssemblyTypesInfos)
+                foreach (var assembly in _cachedAssemblies.AssemblyTypesInfos)
                 {
                     //if (!assembly.FullName.StartsWith("Invert")) continue;
                     foreach (var t in assembly
@@ -106,7 +117,7 @@ namespace uFrame.Editor.Core
             else
             {
                 var items = new List<Type>();
-                foreach (var assembly in CachedAssemblies.AssemblyTypesInfos)
+                foreach (var assembly in _cachedAssemblies.AssemblyTypesInfos)
                 {
                     //if (!assembly.FullName.StartsWith("Invert")) continue;
                     try
@@ -130,17 +141,17 @@ namespace uFrame.Editor.Core
 
         public static Type FindTypeByName(string name)
         {
-            return CachedAssemblies.FindTypeByName(name);
+            return _cachedAssemblies.FindTypeByName(name);
         }
 
         public static Type FindTypeByNameExternal(string name)
         {
-            return CachedAssemblies.FindTypeByName(name);
+            return _cachedAssemblies.FindTypeByName(name);
         }
 
         public static Type FindRuntimeTypeByName(string name)
         {
-            return TypeAssemblies.FindTypeByName(name);
+            return _typeAssemblies.FindTypeByName(name);
         }
 
         public static ICorePlugin[] Plugins
@@ -213,6 +224,7 @@ namespace uFrame.Editor.Core
             get { return _eventManagers ?? (_eventManagers = new Dictionary<Type, IEventManager>()); }
             set { _eventManagers = value; }
         }
+
         public static Action ListenFor(Type eventInterface, object listenerObject)
         {
             var listener = listenerObject;
@@ -453,13 +465,13 @@ namespace uFrame.Editor.Core
 
         public static void CacheAssembly(Assembly assembly)
         {
-            CachedAssemblies.AddAssembly(assembly);
+            _cachedAssemblies.AddAssembly(assembly);
         }
 
         public static void CacheTypeAssembly(Assembly assembly)
         {
 
-            TypeAssemblies.AddAssembly(assembly);
+            _typeAssemblies.AddAssembly(assembly);
         }
 
         private class AssemblyTypesInfo {
@@ -532,6 +544,12 @@ namespace uFrame.Editor.Core
                 }
 
                 return null;
+            }
+
+            public IEnumerable<Assembly> GetAssemblies() {
+                foreach (AssemblyTypesInfo assemblyTypesInfo in AssemblyTypesInfos) {
+                    yield return assemblyTypesInfo.Assembly;
+                }
             }
         }
     }
