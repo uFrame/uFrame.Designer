@@ -1,9 +1,9 @@
-# uFrame Core
+# uFrame Designer
 ---
-uFrame Core Engine
+uFrame Designer
 [![Join the chat at https://gitter.im/micahosborne/uFrame](https://badges.gitter.im/micahosborne/uFrame.svg)](https://gitter.im/micahosborne/uFrame?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-## What is uFrame Core?
+## What is uFrame Designer?
 uFrame, specifically created for the Unity game engine.
 
 It is designed to provide developers with the visual editing tools, code structure and knowledge to develop games faster and more efficiently.
