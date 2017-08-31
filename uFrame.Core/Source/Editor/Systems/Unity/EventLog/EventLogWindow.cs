@@ -99,8 +99,7 @@ namespace uFrame.Editor.Unity.EventLog {
 
             currentRect.yMin = currentRect.yMax;
             currentRect.height = kSplitterHeight;
-            //GUI.Label(currentRect, "", EditorStyles.helpBox);
-            GUI.color = new Color(0,0,0,0.5f);
+            GUI.color = new Color(0, 0 ,0 , 0.5f);
             GUI.DrawTexture(currentRect, EditorGUIUtility.whiteTexture, ScaleMode.StretchToFill);
             GUI.color = Color.white;
             
@@ -160,13 +159,6 @@ namespace uFrame.Editor.Unity.EventLog {
         
         [Serializable]
         private class EventDataList : List<EventData> {
-        }
-
-        [Serializable]
-        private class VerticalSplitter {
-            public void OnGUI() {
-                
-            }
         }
     }
 }
