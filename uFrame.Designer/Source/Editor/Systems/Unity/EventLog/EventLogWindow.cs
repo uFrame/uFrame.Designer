@@ -12,7 +12,7 @@ namespace uFrame.Editor.Unity.EventLog {
             GetWindow<EventLogWindow>();
         }
 
-        private EventDataList _events = new EventDataList();
+        private List<EventData> _events = new List<EventData>();
         private int _selectedEventIndex = -1;
         private Vector2 _scrollbarPosition;
         private IDisposable _debugEventWrapperListener;
@@ -29,7 +29,12 @@ namespace uFrame.Editor.Unity.EventLog {
             if (EditorApplication.isPlaying) {
                 RegisterDebugEventListener();
             } else {
+                              
+#if UNITY_2017_2_OR_NEWER
+                EditorApplication.playModeStateChanged += PlaymodeStateChanged;
+#else
                 EditorApplication.playmodeStateChanged += PlaymodeStateChanged;
+#endif
             }
         }
         
@@ -48,10 +53,18 @@ namespace uFrame.Editor.Unity.EventLog {
                     .Subscribe(evt => EventLogMediatorOnEventPublished(evt.Event));
         }
 
+#if UNITY_2017_2_OR_NEWER
+        private void PlaymodeStateChanged(PlayModeStateChange playModeStateChange) {
+#else
         private void PlaymodeStateChanged() {
+#endif
             if (EditorApplication.isPlaying) {
                 RegisterDebugEventListener();
+#if UNITY_2017_2_OR_NEWER
+                EditorApplication.playModeStateChanged -= PlaymodeStateChanged;
+#else
                 EditorApplication.playmodeStateChanged -= PlaymodeStateChanged;
+#endif
             }
         }
 
@@ -155,10 +168,6 @@ namespace uFrame.Editor.Unity.EventLog {
         private void EventLogMediatorOnEventPublished(object evt) {
             _events.Add(EventData.Build(evt));
             Repaint();
-        }
-        
-        [Serializable]
-        private class EventDataList : List<EventData> {
         }
     }
 }

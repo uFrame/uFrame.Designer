@@ -1,11 +1,7 @@
 namespace uFrame.Editor.Compiling.CodeGen
 {
-    public class _TEMPLATETYPE_
-    {
+    public interface _TEMPLATETYPE_ {
 
-        public virtual string TheType(TemplateContext context)
-        {
-            return "void";
-        }
+        string TheType(TemplateContext context);
     }
 }

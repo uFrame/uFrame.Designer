@@ -2,7 +2,7 @@ namespace uFrame.Editor.Compiling.CodeGen
 {
     public class _ITEMTYPE_ : _TEMPLATETYPE_
     {
-        public override string TheType(TemplateContext context)
+        public string TheType(TemplateContext context)
         {
             if (context.TypedItem == null)
             {
